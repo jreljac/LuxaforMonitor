@@ -1,15 +1,4 @@
-//Changable variables
-var startTime       = 5;                    //Starting time - military time
-var endTime         = 21;                   //Ending time - military time
-var includeDays     = [1,2,3,4,5];          //Days of the week to run 0=Sunday
-var counterInterval = 60;                   //Run the check every x seconds - this should not be a crazy low number
-var upKeyword       = "Success";            //URL should show "Success"
-var logFilePath     = "/home/pi/";
-var urlsToCheck     = ["http://url.com/luxaforMonitor.php|My URL",
-                        "http://url2.com/luxaforMonitor.php|My URL 2",
-                        "http://url3.com/luxaforMonitor.php|My URL 3"];
-
-//From here on down should run as is but change if necessary
+var config          = require("./luxaforMonitor.config");
 var async           = require("async");
 const fs            = require("fs");
 var Luxafor         = require("luxafor")();
@@ -82,9 +71,9 @@ var fetch = function(file, cb) {
     var current_day     = date.getDay();
 
     //If we are on a day that is included in the setup
-    if(includeDays.includes(current_day)) {
+    if(config.includeDays.includes(current_day)) {
         //If we are between startTime and endTime
-        if(current_hour>startTime && current_hour<endTime) {
+        if(current_hour>config.startTime && current_hour<config.endTime) {
             var fileBits    = file.split("|");
                 offMsg      = "";
                 hasError    = false;
@@ -96,7 +85,7 @@ var fetch = function(file, cb) {
                     if(body!=="Success") {
                         body = fileBits[1] + " DOWN"
                     }
-                    cb(null, body); // First param indicates error, null=> no error
+                    cb(null, body);
                 } 
             });
         } else {
@@ -129,13 +118,13 @@ Luxafor.init(function () {
 });
 
 logFileName = _getDTStamp("logName") + ".log";
-theLogFile  = logFilePath + logFileName;
+theLogFile  = config.logFilePath + logFileName;
 startMsg    = "Starting to monitor at " + _getDTStamp();
             _logEntry(theLogFile, startMsg);
-serverMsg   = "  Checking the following servers every " + counterInterval + " seconds";
+serverMsg   = "  Checking the following servers every " + config.counterInterval + " seconds";
             _logEntry(theLogFile, serverMsg);
 
-for(eachURL of urlsToCheck) {
+for(eachURL of config.urlsToCheck) {
     thisURL = eachURL.split("|");
     urlMsg  = "    " + thisURL[1] + " at " + thisURL[0];
             _logEntry(theLogFile, urlMsg);
@@ -143,16 +132,16 @@ for(eachURL of urlsToCheck) {
 
 //Then run again every x seconds
 //Multiple the interval by 1000 to get JS seconds
-counterInterval = counterInterval * 1000;
+var setCounterInterval = config.counterInterval * 1000;
 
 //From: http://stackoverflow.com/a/11063489/99401
 setInterval(function(){ 
-    async.map(urlsToCheck, fetch, function(err, results){
+    async.map(config.urlsToCheck, fetch, function(err, results){
         if(err){
 
         } else {
             for(each of results) {
-                if(each!==upKeyword) {
+                if(each!==config.upKeyword) {
                     //Missing keyword, turn the light red and set the hasError variable to true
                     Luxafor.init(function () {
                         Luxafor.setLuxaforColor(Luxafor.colors.red, function () { });
@@ -173,5 +162,5 @@ setInterval(function(){
             }
         }
     });
-}, counterInterval);
+}, setCounterInterval);
 //Repeat every x seconds until ...

@@ -12,6 +12,9 @@ Seems the best thing to do is to add
 node /home/user/luxaforMonitor.js
 ```
 to the /etc/rc.local file so it autostarts if the system reboots for any reason.
+[http://raspberrypi.stackexchange.com/a/9734/65427](http://raspberrypi.stackexchange.com/a/9734/65427)
+
+
 You can run 
 ```
 node /home/user/luxaforMonitor.js true
@@ -19,6 +22,7 @@ node /home/user/luxaforMonitor.js true
 to log to both the log file and to the console.  (If it is run from cron or the rc.local file output to the console is not visible.)
 
 ## Settings
+Found in `luxaforMonitor.config`
 ```
 var startTime       = 7;                //Monitor start time
 var endTime         = 18;               //Monitor end time - will only monitor between these times
