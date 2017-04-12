@@ -1,10 +1,10 @@
 # LuxaforMonitor 
 A node.js app for monitoring web site availability with visual alerting using a [Luxafor](http://luxafor.com/) LED device.
 <!-- TOC -->
- - [About](#About)
- - [Requirements](#Requirements)
- - [Settings](#Settings)
- - [Usage](#Usage)
+ * [About](#About)
+ * [Requirements](#Requirements)
+ * [Settings](#Settings)
+ * [Usage](#Usage)
 <!-- /TOC -->
 
 # About
