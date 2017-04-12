@@ -112,55 +112,80 @@ var fetch = function(file, cb) {
     }
 }
 
-//First, set the light to yellow as we start things up
-Luxafor.init(function () {
-    Luxafor.setColor(255, 255, 0, function () { });
-});
+if(process.argv.length>=3 && process.argv[2]!=="true") {
+    var mode    = process.argv[2];
+    var R, G, B;
 
-logFileName = _getDTStamp("logName") + ".log";
-theLogFile  = config.logFilePath + logFileName;
-startMsg    = "Starting to monitor at " + _getDTStamp();
-            _logEntry(theLogFile, startMsg);
-serverMsg   = "  Checking the following servers every " + config.counterInterval + " seconds";
-            _logEntry(theLogFile, serverMsg);
-
-for(eachURL of config.urlsToCheck) {
-    thisURL = eachURL.split("|");
-    urlMsg  = "    " + thisURL[1] + " at " + thisURL[0];
-            _logEntry(theLogFile, urlMsg);
-}
-
-//Then run again every x seconds
-//Multiple the interval by 1000 to get JS seconds
-var setCounterInterval = config.counterInterval * 1000;
-
-//From: http://stackoverflow.com/a/11063489/99401
-setInterval(function(){ 
-    async.map(config.urlsToCheck, fetch, function(err, results){
-        if(err){
-
+    if(mode==="off") {
+        R = 0;
+        G = 0;
+        B = 0;
+    } else {
+        if(process.argv.length==3) {
+            R = 255;
+            G = 255;
+            B = 255;
         } else {
-            for(each of results) {
-                if(each!==config.upKeyword) {
-                    //Missing keyword, turn the light red and set the hasError variable to true
-                    Luxafor.init(function () {
-                        Luxafor.setLuxaforColor(Luxafor.colors.red, function () { });
-                    });
+            R = process.argv[3];
+            G = process.argv[4];
+            B = process.argv[5];
+        }
+    }
 
-                    logFileName = _getDTStamp("logName") + ".log";
-                    urlErrMsg   = ".." + each + " at " + _getDTStamp();
-                        _logEntry(theLogFile, urlErrMsg);
-                    hasError = true
-                } else {
-                    if(hasError!=true) {
-                        //If all are good turn the light green
+    Luxafor.init(function () {
+        Luxafor.setColor(R, G, B, function(){});
+    }); 
+} else {
+    //First, set the light to yellow as we start things up
+    Luxafor.init(function () {
+        Luxafor.setColor(255, 255, 0, function () { });
+    });
+
+    logFileName = _getDTStamp("logName") + ".log";
+    theLogFile  = config.logFilePath + logFileName;
+    startMsg    = "Starting to monitor at " + _getDTStamp();
+                _logEntry(theLogFile, startMsg);
+    serverMsg   = "  Checking the following servers every " + config.counterInterval + " seconds";
+                _logEntry(theLogFile, serverMsg);
+
+    for(eachURL of config.urlsToCheck) {
+        thisURL = eachURL.split("|");
+        urlMsg  = "    " + thisURL[1] + " at " + thisURL[0];
+                _logEntry(theLogFile, urlMsg);
+    }
+
+    //Then run again every x seconds
+    //Multiple the interval by 1000 to get JS seconds
+    var setCounterInterval = config.counterInterval * 1000;
+
+    //From: http://stackoverflow.com/a/11063489/99401
+    setInterval(function(){ 
+        async.map(config.urlsToCheck, fetch, function(err, results){
+            if(err){
+
+            } else {
+                for(each of results) {
+                    if(each!==config.upKeyword) {
+                        //Missing keyword, turn the light red and set the hasError variable to true
                         Luxafor.init(function () {
-                            Luxafor.setLuxaforColor(Luxafor.colors.green, function () { });
+                            Luxafor.setLuxaforColor(Luxafor.colors.red, function () { });
                         });
+
+                        logFileName = _getDTStamp("logName") + ".log";
+                        urlErrMsg   = ".." + each + " at " + _getDTStamp();
+                            _logEntry(theLogFile, urlErrMsg);
+                        hasError = true
+                    } else {
+                        if(hasError!=true) {
+                            //If all are good turn the light green
+                            Luxafor.init(function () {
+                                Luxafor.setLuxaforColor(Luxafor.colors.green, function () { });
+                            });
+                        }
                     }
                 }
             }
-        }
-    });
-}, setCounterInterval);
-//Repeat every x seconds until ...
+        });
+    }, setCounterInterval);
+    //Repeat every x seconds until ...
+}
