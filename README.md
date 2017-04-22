@@ -3,10 +3,7 @@ A node.js app for monitoring web site availability with visual alerting using a 
 
 <!-- TOC -->
 
-- [About](#about)
-- [Requirements](#requirements)
-- [Settings](#settings)
-- [Usage](#usage)
+- [LuxaforMonitor](#luxaformonitor)
 
 <!-- /TOC -->
 
@@ -80,8 +77,8 @@ to the /etc/rc.local file so it autostarts if the system reboots for any reason.
 Additionally, you can run 
 
 ```
-#node ~/luxaforPower off            //Turns it off
-#node ~/luxaforPower on             //Turns it on (white)
-#node ~/luxaforPower on 255 255 0   //Turns it on (yellow)
+#node ~/luxaforMonitor off            //Turns it off
+#node ~/luxaforMonitor on             //Turns it on (white)
+#node ~/luxaforMonitor on 255 255 0   //Turns it on (yellow)
 ```
 to turn off and test the Luxafor

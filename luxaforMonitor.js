@@ -136,7 +136,7 @@ if(process.argv.length>=3 && process.argv[2]!=="true") {
         Luxafor.setColor(R, G, B, function(){});
     }); 
 } else {
-    //First, set the light to yellow as we start things up
+    //Set the light to yellow as we start things up
     Luxafor.init(function () {
         Luxafor.setColor(255, 255, 0, function () { });
     });
