@@ -1,6 +1,4 @@
 # LuxaforMonitor 
-A node.js app for monitoring web site availability with visual alerting using a [Luxafor](http://luxafor.com/) LED device.
-
 <!-- TOC -->
 
 - [LuxaforMonitor](#luxaformonitor)
@@ -9,6 +7,8 @@ A node.js app for monitoring web site availability with visual alerting using a 
 
 About
 =====
+A node.js app for monitoring web site availability with visual alerting using a [Luxafor](http://luxafor.com/) LED device.
+
 Initially used to turn a [Raspberry Pi](https://www.raspberrypi.org/) into a basic web monitoring tool.  My goal was to have a monitor with a visual way to identify if a remote server was down.  I was already getting emails/txt messages if/when downtime happened but ocassionally I'd miss those if email was turned off and/or phone was muted, in drawer, etc...
 
 The light simply turns red if any one of the monitored servers goes offline for any reason.  It looks for a specific keyword from the URL (see `luxaforMonitor.php` as an example), if the key word exisits it turns the light green, if not it turns the light red.  If one monitored server is down the red light flips on - you have to determine which server is down (the log file is helpfull here but hopefully you are also alerted in other ways)
