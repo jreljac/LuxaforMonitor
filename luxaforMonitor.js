@@ -220,7 +220,9 @@ if(process.argv.length>=3 && process.argv[2]!=="true") {
     }); 
 } else {
     if(config.sendMailOnStart===true) {
-        _sendIP(config.emailUser, config.emailPassword, config.emailTo);
+        setTimeout(function(){
+            _sendIP(config.emailUser, config.emailPassword, config.emailTo);
+        }, 15000);
     };
 
     //Set the light to yellow as we start things up
