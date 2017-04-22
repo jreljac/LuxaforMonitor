@@ -1,7 +1,10 @@
 # LuxaforMonitor 
 <!-- TOC -->
 
-- [LuxaforMonitor](#luxaformonitor)
+- [About](#about)
+- [Requirements](#requirements)
+- [Settings](#settings)
+- [Usage](#usage)
 
 <!-- /TOC -->
 
