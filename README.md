@@ -15,6 +15,10 @@ The light simply turns red if any one of the monitored servers goes offline for 
 
 I didn't want to run this 24x7x365 so it allows for setting a daily start end end time as well as a setting to have it run on only specific days of the week (no need to run it before 7:00 AM or after 6:00 PM or on Saturday & Sunday in my case.)
 
+As an option, you can have this send an email with the Raspberry's IP address to an email address on startup.  (I found that useful for running the Raspberry headless)
+
+Additionally you can use this to turn your Luxafor on or off
+
 Requirements
 ============
 Requires node async, fs and request
@@ -35,22 +39,32 @@ npm install luxafor
 npm install usb
 ```
 
+If sendMailOnStart is set to true, nodemail is required: https://github.com/nodemailer/nodemailer
+
+```
+npm install nodemailer
+```
+
 Settings
 ========
 Found in `luxaforMonitor.config`
 
 ```
-var startTime       = 7;                //Monitor start time
-var endTime         = 18;               //Monitor end time - will only monitor between these times
-var includeDays     = [1,2,3,4,5];      //An array of days of the week to run Sunday=0, Saturday=6
-var counterInterval = 60;               //Run the check every x seconds
-var upKeyword       = "Success";        //Key word to look for
-var logFilePath     = "/home/user/";    //Log file path
+config.startTime       = 7;                //Monitor start time
+config.endTime         = 18;               //Monitor end time - will only monitor between these times
+config.includeDays     = [1,2,3,4,5];      //An array of days of the week to run Sunday=0, Saturday=6
+config.counterInterval = 60;               //Run the check every x seconds
+config.upKeyword       = "Success";        //Key word to look for
+config.logFilePath     = "/home/user/";    //Log file path
+config.sendMailOnStart  = true;
+config.emailUser        = "user@gmail.com";  //Needs to be a gmail account
+config.emailPassword    = "user_password";   //If 2 factor auth is on, use an app password
+config.emailTo          = "someone@mail.com";
 
 //An array of URLs to check
 //Each value should be URL|Friendly name
 //URL is what is monitored, Friendly name is what gets logged
-var urlsToCheck = ["http://url.com/luxaforMonitor.php|My URL",
+config.urlsToCheck = ["http://url.com/luxaforMonitor.php|My URL",
                     "http://url2.com/luxaforMonitor.php|My URL 2",
                     "http://url3.com/luxaforMonitor.php|My URL 3"]; 
 ```

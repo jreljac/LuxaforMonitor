@@ -18,6 +18,89 @@ if(process.argv.length===3 && process.argv[2]==="true") {
     logToConsole = true
 }
 
+var getNetworkIPs = (function () {
+    //From: http://stackoverflow.com/a/3742915/99401
+    var ignoreRE = /^(127\.0\.0\.1|::1|fe80(:1)?::1(%.*)?)$/i;
+    var exec = require("child_process").exec;
+    var cached;
+    var command;
+    var filterRE;
+
+    switch (process.platform) {
+    case "win32":
+        command     = "ipconfig";
+        filterRE    = /\bIPv[46][^:\r\n]+:\s*([^\s]+)/g;
+        break;
+    case "darwin":
+        command     = "ifconfig";
+        filterRE    = /\binet\s+([^\s]+)/g;
+        break;
+    default:
+        command     = "ifconfig";
+        filterRE    = /\binet\b[^:]+:\s*([^\s]+)/g;
+        break;
+    }
+
+    return function (callback, bypassCache) {
+        if (cached && !bypassCache) {
+            callback(null, cached);
+            return;
+        }
+        // system call
+        exec(command, function (error, stdout, sterr) {
+            cached = [];
+            var ip;
+            var matches = stdout.match(filterRE) || [];
+            
+            for (var i = 0; i < matches.length; i++) {
+                ip = matches[i].replace(filterRE, '$1')
+                if (!ignoreRE.test(ip)) {
+                    cached.push(ip);
+                }
+            }
+            callback(error, cached);
+        });
+    };
+})();
+
+function _sendIP(emailUser, emailPassword, emailTo) {
+    "use strict";
+
+    var nodemailer  = require("nodemailer");
+    var os          = require("os");
+    var hostname    = os.hostname();
+
+    getNetworkIPs(function (error, ip) {
+        // create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: emailUser,
+                pass: emailPassword
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: emailUser, // sender address
+            to: emailTo, // list of receivers
+            subject: hostname + " IP Address: " + ip, // Subject line
+            text: hostname + " IP Address: " + ip, // plain text body
+            html: hostname + " IP Address: <strong>" + ip + "</strong>" // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if(error) {
+                return console.log(error);
+            }
+        });
+        if(error) {
+            console.log("error:", error);
+        }
+    }, false);  
+}
+
 function _padIN(input) {
     //For padding minutes and seconds
     return input < 10 ? "0" + input : input;
@@ -136,6 +219,10 @@ if(process.argv.length>=3 && process.argv[2]!=="true") {
         Luxafor.setColor(R, G, B, function(){});
     }); 
 } else {
+    if(config.sendMailOnStart===true) {
+        _sendIP(config.emailUser, config.emailPassword, config.emailTo);
+    };
+
     //Set the light to yellow as we start things up
     Luxafor.init(function () {
         Luxafor.setColor(255, 255, 0, function () { });
